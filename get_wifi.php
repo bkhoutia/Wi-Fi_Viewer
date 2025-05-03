@@ -25,6 +25,7 @@ $wifiProfiles = getWifiProfiles();
     <meta charset="UTF-8">
     <title>Wi-Fi Password Viewer</title>
     <style>
+        /* Existing styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f0f2f5;
@@ -43,6 +44,15 @@ $wifiProfiles = getWifiProfiles();
         p {
             color: #555;
             margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
         }
         table {
             width: 90%;
@@ -92,9 +102,11 @@ $wifiProfiles = getWifiProfiles();
 <body>
 
 <h2>📶 Saved Wi-Fi Networks & Passwords</h2>
-<p>Click on any password to copy it to clipboard.</p>
+<p>Type in the search box to filter Wi-Fi networks in real-time.</p>
 
-<table>
+<input type="text" id="search" placeholder="Search Wi-Fi name..." onkeyup="filterTable()">
+
+<table id="wifiTable">
     <thead>
         <tr>
             <th>#</th>
@@ -110,7 +122,7 @@ $wifiProfiles = getWifiProfiles();
         ?>
         <tr>
             <td><?= $counter++ ?></td>
-            <td><?= htmlspecialchars($profile) ?></td>
+            <td class="wifi-name"><?= htmlspecialchars($profile) ?></td>
             <td class="copyable" onclick="copyToClipboard(this)"><?= htmlspecialchars($pwd) ?></td>
         </tr>
         <?php endforeach; ?>
@@ -118,6 +130,20 @@ $wifiProfiles = getWifiProfiles();
 </table>
 
 <script>
+function filterTable() {
+    const searchInput = document.getElementById('search').value.toLowerCase();
+    const rows = document.querySelectorAll('#wifiTable tbody tr');
+
+    rows.forEach(row => {
+        const wifiName = row.querySelector('.wifi-name').textContent.toLowerCase();
+        if (wifiName.includes(searchInput)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
 function copyToClipboard(td) {
     const text = td.textContent;
     navigator.clipboard.writeText(text).then(() => {
