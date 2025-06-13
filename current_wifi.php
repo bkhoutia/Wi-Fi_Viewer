@@ -10,7 +10,10 @@ function getCurrentWifiName() {
 }
 
 function getWifiPassword($profileName) {
-    $command = 'netsh wlan show profile name="' . $profileName . '" key=clear';
+    // Sanitize the profile name to avoid command injection or parsing issues
+    $safeProfile = escapeshellarg($profileName);
+    // Build the command with the sanitized profile name
+    $command = 'netsh wlan show profile name=' . $safeProfile . ' key=clear';
     $output = shell_exec($command);
     
     if (preg_match('/Key Content\s*:\s(.*)/', $output, $matches)) {
